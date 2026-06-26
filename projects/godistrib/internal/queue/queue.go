@@ -5,6 +5,7 @@ type Task struct {
 	ID       string
 	Priority int    // Higher number = higher priority
 	Payload  string // The actual data the worker needs
+	Timestamp int64
 	Index    int    // The index of the item in the heap
 }
 
@@ -15,6 +16,9 @@ func (pq TaskQueue) Len() int { return len(pq) }
 
 func (pq TaskQueue) Less(i, j int) bool {
 	// Max-Heap: highest priority pops first
+	if pq[i].Priority == pq[j].Priority {
+		return pq[i].Timestamp < pq[j].Timestamp
+	}
 	return pq[i].Priority > pq[j].Priority
 }
 
