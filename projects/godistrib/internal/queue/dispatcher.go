@@ -11,7 +11,7 @@ import (
 
 // Dispatcher is the brain of our scheduler
 type Dispatcher struct {
-	mu    sync.RWMutex
+	Mu    sync.RWMutex
 	Queue TaskQueue
 }
 
@@ -26,8 +26,8 @@ func NewDispatcher() *Dispatcher {
 
 // HandleGetLen allows infinite concurrent reads safely
 func (d *Dispatcher) HandleGetLen(w http.ResponseWriter, r *http.Request) {
-	d.mu.RLock()
-	defer d.mu.RUnlock()
+	d.Mu.RLock()
+	defer d.Mu.RUnlock()
 	
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, `{"queue_length": %d}`, d.Queue.Len())
@@ -46,8 +46,8 @@ func (d *Dispatcher) HandleSubmitTask(w http.ResponseWriter, r *http.Request) {
 	// Populate the timestamp for our FIFO tie-breaker
 	newTask.Timestamp = time.Now().UnixNano()
 
-	d.mu.Lock()
-	defer d.mu.Unlock()
+	d.Mu.Lock()
+	defer d.Mu.Unlock()
 
 	heap.Push(&d.Queue, &newTask)
 	
